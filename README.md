@@ -107,7 +107,7 @@ The architecture below is scoped for hackathon speed — low setup overhead, min
 - ** Frontend: React
 - ** Backend: Node.js / Express (REST API)
 - **Database: PostgreSQL
-- ** Authentication: Supabase Auth (or equivalent managed auth — not built in-house)
+- ** Authentication: Supabase Auth 
 ** Hosting: Vercel (frontend) + Render (backend) + Supabase (database)
 **Version Control: Git/GitHub
 
