@@ -104,12 +104,12 @@ Advanced capabilities such as automated fraud detection, advanced payment protec
 ## Technical Architecture
 The architecture below is scoped for hackathon speed — low setup overhead, minimal moving parts, and tools the team is already comfortable with.
 
-Frontend: React
-Backend: Node.js / Express (REST API)
-Database: PostgreSQL (hosted via Supabase or Neon, free tier)
-Authentication: Supabase Auth (or equivalent managed auth — not built in-house)
-Hosting: Vercel (frontend) + Render (backend) + Supabase (database)
-Version Control: Git/GitHub
+- ** Frontend: React
+- ** Backend: Node.js / Express (REST API)
+- **Database: PostgreSQL
+- ** Authentication: Supabase Auth (or equivalent managed auth — not built in-house)
+** Hosting: Vercel (frontend) + Render (backend) + Supabase (database)
+**Version Control: Git/GitHub
 
 Note: AWS and Docker were considered but dropped for the hackathon build — the managed free-tier hosting above gets the app live in minutes rather than hours, without sacrificing credibility. Both remain reasonable additions for a post-hackathon, production-grade iteration.
 
