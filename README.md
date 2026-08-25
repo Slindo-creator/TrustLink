@@ -108,8 +108,8 @@ The architecture below is scoped for hackathon speed — low setup overhead, min
 - ** Backend: Node.js / Express (REST API)
 - **Database: PostgreSQL
 - ** Authentication: Supabase Auth 
-** Hosting: Vercel (frontend) + Render (backend) + Supabase (database)
-**Version Control: Git/GitHub
+-** Hosting: Vercel (frontend) + Render (backend) + Supabase (database)  
+-**Version Control: Git/GitHub
 
 Note: AWS and Docker were considered but dropped for the hackathon build — the managed free-tier hosting above gets the app live in minutes rather than hours, without sacrificing credibility. Both remain reasonable additions for a post-hackathon, production-grade iteration.
 
