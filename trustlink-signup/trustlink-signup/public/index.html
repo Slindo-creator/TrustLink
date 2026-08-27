@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TrustLink — Sign Up</title>
+<style>
+  :root {
+    --ink: #0B2B2E;
+    --teal: #028090;
+    --seafoam: #00A896;
+    --mint: #02C39A;
+    --offwhite: #F4F9F8;
+    --muted: #5B7370;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, "Segoe UI", Calibri, sans-serif;
+    background: var(--ink);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+  .card {
+    background: #fff;
+    border-radius: 14px;
+    max-width: 460px;
+    width: 100%;
+    padding: 2.25rem;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+  }
+  .eyebrow {
+    color: var(--teal);
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin: 0 0 0.4rem;
+  }
+  h1 {
+    font-size: 1.6rem;
+    margin: 0 0 0.3rem;
+  }
+  p.sub {
+    color: var(--muted);
+    margin: 0 0 1.5rem;
+    font-size: 0.92rem;
+  }
+  .role-toggle {
+    display: flex;
+    background: var(--offwhite);
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 1.4rem;
+  }
+  .role-toggle button {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 0.55rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.88rem;
+    cursor: pointer;
+    color: var(--muted);
+    transition: all 0.15s ease;
+  }
+  .role-toggle button.active {
+    background: var(--teal);
+    color: #fff;
+  }
+  label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin: 0.9rem 0 0.3rem;
+    color: var(--ink);
+  }
+  input {
+    width: 100%;
+    padding: 0.65rem 0.8rem;
+    border: 1px solid #DCE8E6;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    font-family: inherit;
+  }
+  input:focus {
+    outline: 2px solid var(--mint);
+    outline-offset: 1px;
+    border-color: var(--mint);
+  }
+  .vendor-field { display: none; }
+  .vendor-field.show { display: block; }
+  button.submit {
+    width: 100%;
+    margin-top: 1.6rem;
+    padding: 0.75rem;
+    background: var(--seafoam);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+  }
+  button.submit:hover { background: var(--teal); }
+  button.submit:disabled { opacity: 0.6; cursor: not-allowed; }
+  .message {
+    margin-top: 1rem;
+    padding: 0.7rem 0.9rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    display: none;
+  }
+  .message.success { background: #E3F7F1; color: #046A5A; display: block; }
+  .message.error { background: #FCE9E9; color: #A5322A; display: block; }
+  .users-link {
+    display: block;
+    text-align: center;
+    margin-top: 1.2rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <p class="eyebrow">TrustLink</p>
+  <h1>Create your account</h1>
+  <p class="sub">Join as a customer discovering local vendors, or a vendor building a verified profile.</p>
+
+  <div class="role-toggle">
+    <button type="button" class="active" data-role="customer">Customer</button>
+    <button type="button" data-role="vendor">Vendor</button>
+  </div>
+
+  <form id="signupForm">
+    <label for="name">Full name</label>
+    <input type="text" id="name" name="name" required placeholder="e.g. Thando Mokoena" />
+
+    <label for="email">Email</label>
+    <input type="email" id="email" name="email" required placeholder="you@example.com" />
+
+    <div class="vendor-field" id="businessNameField">
+      <label for="businessName">Business name</label>
+      <input type="text" id="businessName" name="businessName" placeholder="e.g. Thando's Sneaker Spot" />
+    </div>
+
+    <label for="location">Location</label>
+    <input type="text" id="location" name="location" placeholder="e.g. Johannesburg, Gauteng" />
+
+    <button type="submit" class="submit">Sign up</button>
+    <div class="message" id="message"></div>
+  </form>
+
+  <a class="users-link" href="/api/users" target="_blank">View raw signed-up users (proof-of-concept check) →</a>
+</div>
+
+<script>
+  let currentRole = "customer";
+  const toggleButtons = document.querySelectorAll(".role-toggle button");
+  const businessNameField = document.getElementById("businessNameField");
+  const businessNameInput = document.getElementById("businessName");
+
+  toggleButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      toggleButtons.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentRole = btn.dataset.role;
+      const isVendor = currentRole === "vendor";
+      businessNameField.classList.toggle("show", isVendor);
+      businessNameInput.required = isVendor;
+    });
+  });
+
+  const form = document.getElementById("signupForm");
+  const messageEl = document.getElementById("message");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    messageEl.className = "message";
+    messageEl.textContent = "";
+
+    const payload = {
+      role: currentRole,
+      name: document.getElementById("name").value.trim(),
+      email: document.getElementById("email").value.trim(),
+      businessName: businessNameInput.value.trim(),
+      location: document.getElementById("location").value.trim(),
+    };
+
+    const submitBtn = form.querySelector(".submit");
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Signing up...";
+
+    try {
+      const res = await fetch("/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        messageEl.className = "message error";
+        messageEl.textContent = data.error || "Something went wrong.";
+      } else {
+        messageEl.className = "message success";
+        messageEl.textContent = `Welcome, ${data.user.name}! Your ${data.user.role} account was created.`;
+        form.reset();
+        businessNameField.classList.remove("show");
+      }
+    } catch (err) {
+      messageEl.className = "message error";
+      messageEl.textContent = "Could not reach the server. Please try again.";
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Sign up";
+    }
+  });
+</script>
+
+</body>
+</html>
