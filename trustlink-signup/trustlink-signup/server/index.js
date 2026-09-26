@@ -1,5 +1,4 @@
 // TrustLink — minimal working signup prototype (TRL 3 proof of concept)
-// Real signup form -> real API endpoint -> real database write & read.
 // Swap better-sqlite3 for pg (PostgreSQL/Supabase) later without changing the API shape.
 
 const express = require("express");
@@ -60,7 +59,6 @@ app.post("/api/signup", (req, res) => {
   }
 });
 
-// --- GET /api/users — proves data actually persisted (demo/verification endpoint) ---
 app.get("/api/users", (req, res) => {
   const users = db.prepare("SELECT id, role, name, email, business_name, location, created_at FROM users ORDER BY id DESC").all();
   res.json(users);
