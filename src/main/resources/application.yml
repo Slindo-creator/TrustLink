@@ -1,0 +1,74 @@
+server:
+  port: ${PORT:8080}
+
+spring:
+  application:
+    name: trustlink-backend
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/trustlink}
+    username: ${DB_USERNAME:trustlink}
+    password: ${DB_PASSWORD:trustlink}
+  jpa:
+    hibernate:
+      ddl-auto: validate   # schema is owned by Flyway migrations, not Hibernate auto-DDL
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            # Google Cloud Console -> APIs & Services -> Credentials -> OAuth client ID
+            # (Web application). Authorized redirect URI: {baseUrl}/login/oauth2/code/google
+            client-id: ${GOOGLE_CLIENT_ID:not-configured}
+            client-secret: ${GOOGLE_CLIENT_SECRET:not-configured}
+            scope: openid, email, profile
+          facebook:
+            # Meta for Developers -> your app -> Facebook Login -> Settings. Valid OAuth
+            # Redirect URI: {baseUrl}/login/oauth2/code/facebook
+            client-id: ${FACEBOOK_CLIENT_ID:not-configured}
+            client-secret: ${FACEBOOK_CLIENT_SECRET:not-configured}
+            scope: email, public_profile
+        provider:
+          facebook:
+            # Explicit `fields` so we reliably get an email back, not just id/name.
+            user-info-uri: https://graph.facebook.com/me?fields=id,name,email
+
+  servlet:
+    multipart:
+      max-file-size: 8MB
+      max-request-size: 8MB
+
+app:
+  storage:
+    # Local disk for the hackathon build. Swap for S3-compatible object storage (ideally
+    # an SA-region bucket, given the POPIA data-residency discussion) before production -
+    # this path won't survive a redeploy on most hosting platforms.
+    verification-upload-dir: ${VERIFICATION_UPLOAD_DIR:./uploads/verification}
+    max-verification-file-size-bytes: ${MAX_VERIFICATION_FILE_SIZE_BYTES:5242880} # 5MB
+  cors:
+    # Comma-separated list of allowed frontend origins. Never use "*" once auth is in play.
+    allowed-origins: ${FRONTEND_ORIGINS:http://localhost:3000}
+  oauth2:
+    # Where we redirect the browser after OAuth login, with our own JWT as a query
+    # param - see OAuth2AuthenticationSuccessHandler for why, and its trade-offs.
+    success-redirect: ${OAUTH2_SUCCESS_REDIRECT:http://localhost:3000/oauth/callback}
+    failure-redirect: ${OAUTH2_FAILURE_REDIRECT:http://localhost:3000/login}
+  jwt:
+    # Override via env var in every real deployment - never ship the default secret.
+    secret: ${JWT_SECRET:REPLACE_WITH_A_LONG_RANDOM_SECRET_AT_LEAST_32_BYTES}
+    expiration-ms: ${JWT_EXPIRATION_MS:3600000}       # access token - deliberately short-lived (1h default)
+    refresh-expiration-days: ${JWT_REFRESH_EXPIRATION_DAYS:30}
+  rate-limit:
+    auth-requests-per-minute: ${AUTH_RATE_LIMIT:10}
+
+logging:
+  level:
+    com.trustlink: INFO
