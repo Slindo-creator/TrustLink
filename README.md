@@ -80,7 +80,38 @@ Street vendors, small traders, home-based businesses, and other informal busines
 7. Completed legitimate transactions contribute to the vendor's reputation.
 
 ---
+# TrustLink — Signup Prototype (TRL 3 Proof of Concept)
 
+A minimal but fully working slice of TrustLink: a real signup form for both
+customers and vendors, backed by a real API endpoint and a real database
+write/read — not a mockup.
+
+## What actually works
+- `POST /api/signup` — validates input, writes a new user (customer or
+  vendor) to a SQLite database, returns the saved record
+- `GET /api/users` — reads real persisted data back out, so you can verify
+  signups actually land in the database
+- Frontend form at `/` — role toggle (customer/vendor), client-side submit,
+  live success/error feedback
+
+## Run it locally
+```bash
+npm install
+node server/index.js
+```
+Then open http://localhost:4000
+
+## Notes
+- Uses SQLite (`better-sqlite3`) for zero-setup local development. Swapping
+  to PostgreSQL/Supabase for production only requires changing the DB layer
+  in `server/index.js` — the API shape (`/api/signup`, `/api/users`) stays
+  the same.
+- This is intentionally scoped: it proves the core account-creation flow
+  works end-to-end. Verification, reputation, and listings are the next
+  slices to build on top of this same pattern.
+
+
+  
 ## Hackathon MVP
 
 The initial TrustLink MVP will focus on demonstrating the core trust concept rather than attempting to solve every challenge in informal commerce.
