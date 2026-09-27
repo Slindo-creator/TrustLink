@@ -10,7 +10,7 @@ import com.trustlink.exception.ApiException;
 import com.trustlink.repository.UserRepository;
 import com.trustlink.repository.VendorProfileRepository;
 import com.trustlink.security.AppUserPrincipal;
-import com.trustlink.security.JwtService;
+import com.trustlink.security.JwtUtils;
 import com.trustlink.security.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,7 +28,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final VendorProfileRepository vendorProfileRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
+    private final JwtUtils jwtUtils;
     private final RefreshTokenService refreshTokenService;
     private final AuthenticationManager authenticationManager;
 
@@ -50,19 +50,19 @@ public class AuthService {
         }
 
         User user = User.builder()
-            .role(request.role())
-            .name(request.name())
-            .email(request.email().toLowerCase())
-            .passwordHash(passwordEncoder.encode(request.password()))
-            .phone(request.phone())
-            .build();
+                .role(request.role())
+                .name(request.name())
+                .email(request.email().toLowerCase())
+                .passwordHash(passwordEncoder.encode(request.password()))
+                .phone(request.phone())
+                .build();
         user = userRepository.save(user);
 
         if (request.role() == Role.VENDOR) {
             VendorProfile profile = VendorProfile.builder()
-                .user(user)
-                .businessName(request.businessName())
-                .build();
+                    .user(user)
+                    .businessName(request.businessName())
+                    .build();
             vendorProfileRepository.save(profile);
         }
 
@@ -72,11 +72,11 @@ public class AuthService {
     public AuthResponse login(LoginRequest request) {
         try {
             var authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.email().toLowerCase(), request.password())
+                    new UsernamePasswordAuthenticationToken(request.email().toLowerCase(), request.password())
             );
             AppUserPrincipal principal = (AppUserPrincipal) authentication.getPrincipal();
             User user = userRepository.findByEmail(principal.getUsername())
-                .orElseThrow(() -> new ApiException(HttpStatus.UNAUTHORIZED, "Invalid email or password"));
+                    .orElseThrow(() -> new ApiException(HttpStatus.UNAUTHORIZED, "Invalid email or password"));
 
             return issueTokens(user);
         } catch (BadCredentialsException ex) {
@@ -101,11 +101,11 @@ public class AuthService {
     }
 
     private AuthResponse issueTokens(User user) {
-        String accessToken = jwtService.generateToken(user.getId(), user.getEmail(), user.getRole().name());
+        String accessToken = jwtUtils.generateToken(user.getId(), user.getEmail(), user.getRole().name());
         String refreshToken = refreshTokenService.issue(user);
         return new AuthResponse(
-            accessToken, jwtService.expirationSeconds(), refreshToken,
-            user.getId(), user.getRole().name(), user.getName()
+                accessToken, jwtUtils.expirationSeconds(), refreshToken,
+                user.getId(), user.getRole().name(), user.getName()
         );
     }
 

@@ -6,13 +6,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
 
 @Entity
 @Table(
-    name = "reviews",
-    uniqueConstraints = @UniqueConstraint(columnNames = {"vendor_profile_id", "customer_id"})
+        name = "reviews",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"vendor_profile_id", "customer_id"})
 )
 @Getter
 @Setter
@@ -33,6 +35,7 @@ public class Review {
     @JoinColumn(name = "customer_id", nullable = false)
     private User customer;
 
+    @JdbcTypeCode(SqlTypes.SMALLINT)
     @Column(nullable = false)
     private int rating;
 

@@ -37,17 +37,10 @@ public class User {
     @Column(name = "password_hash")
     private String passwordHash;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "auth_provider", nullable = false, length = 20)
-    @Builder.Default
-    private AuthProvider authProvider = AuthProvider.LOCAL;
-
     // The provider's stable subject/user id (Google "sub", Facebook "id"). Null for LOCAL.
     // We key OAuth lookups on (authProvider, providerId), never on email alone, so a
     // provider account can't silently take over an unrelated local account with a
     // coincidentally matching address.
-    @Column(name = "provider_id", length = 190)
-    private String providerId;
 
     @Column(length = 30)
     private String phone;

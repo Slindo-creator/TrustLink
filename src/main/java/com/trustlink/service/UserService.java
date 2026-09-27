@@ -10,7 +10,7 @@ import com.trustlink.exception.ApiException;
 import com.trustlink.repository.UserRepository;
 import com.trustlink.repository.VendorProfileRepository;
 import com.trustlink.security.AppUserPrincipal;
-import com.trustlink.security.JwtService;
+import com.trustlink.security.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,11 +21,11 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final VendorProfileRepository vendorProfileRepository;
-    private final JwtService jwtService;
+    private final JwtUtils jwtUtils;
 
     public UserProfileResponse getOwnProfile(AppUserPrincipal caller) {
         User user = userRepository.findById(caller.getId())
-            .orElseThrow(() -> ApiException.notFound("User not found."));
+                .orElseThrow(() -> ApiException.notFound("User not found."));
         return toResponse(user);
     }
 
@@ -40,7 +40,7 @@ public class UserService {
     @Transactional
     public AuthResponse becomeVendor(AppUserPrincipal caller, BecomeVendorRequest request) {
         User user = userRepository.findById(caller.getId())
-            .orElseThrow(() -> ApiException.notFound("User not found."));
+                .orElseThrow(() -> ApiException.notFound("User not found."));
 
         if (user.getRole() == Role.VENDOR) {
             throw ApiException.conflict("This account is already a vendor account.");
@@ -53,20 +53,20 @@ public class UserService {
         userRepository.save(user);
 
         VendorProfile profile = VendorProfile.builder()
-            .user(user)
-            .businessName(request.businessName())
-            .build();
+                .user(user)
+                .businessName(request.businessName())
+                .build();
         vendorProfileRepository.save(profile);
 
-        String token = jwtService.generateToken(user.getId(), user.getEmail(), user.getRole().name());
+        String token = jwtUtils.generateToken(user.getId(), user.getEmail(), user.getRole().name());
         // null refreshToken: this isn't a new session, so the client keeps using
         // whichever refresh token it already has - see AuthResponse's javadoc.
-        return new AuthResponse(token, jwtService.expirationSeconds(), null, user.getId(), user.getRole().name(), user.getName());
+        return new AuthResponse(token, jwtUtils.expirationSeconds(), null, user.getId(), user.getRole().name(), user.getName());
     }
 
     private UserProfileResponse toResponse(User user) {
         return new UserProfileResponse(
-            user.getId(), user.getName(), user.getEmail(), user.getRole().name(), user.getAuthProvider().name()
+                user.getId(), user.getName(), user.getEmail(), user.getRole().name()
         );
     }
 }
