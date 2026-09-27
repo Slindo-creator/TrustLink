@@ -39,7 +39,8 @@ app:
 
   jwt:
     # Override via env var in every real deployment - never ship the default secret.
-    secret: ${JWT_SECRET:REPLACE_WITH_A_LONG_RANDOM_SECRET_AT_LEAST_32_BYTES}
+    secret: ${JWT_SECRET:REPLACE_WITH_A_LONG_RANDOM_SECRET_AT_LEAST_32_BYTES:XdX8tQVKi4cTtJMSosiw1pVOw4whZbIXDia0M9fnWyUsZVAngICToZCxiPeuoXiK
+        Ub1cKD+YZi1z+O0mbMjvog==}
     expiration-ms: ${JWT_EXPIRATION_MS:3600000}       # access token - deliberately short-lived (1h default)
     refresh-expiration-days: ${JWT_REFRESH_EXPIRATION_DAYS:30}
   rate-limit:
